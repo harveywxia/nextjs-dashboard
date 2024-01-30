@@ -9,6 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
+import { updateInvoice } from '@/app/lib/actions';
 
 export default function EditInvoiceForm({
   invoice,
@@ -17,8 +18,13 @@ export default function EditInvoiceForm({
   invoice: InvoiceForm;
   customers: CustomerField[];
 }) {
+  // 获取ID，您可以使用 JS 绑定将 id 传递给服务器动作。这将确保传递给服务器动作的任何值都是经过编码的。
+  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
+  // updateInvoice.bind(null, invoice.id) 会创建一个新的函数 updateInvoiceWithId，
+  // 该函数将在调用时接收剩余的参数，并使用绑定的 invoice.id 作为第一个参数，
+  // 然后将这些参数传递给 updateInvoice 函数。
   return (
-    <form>
+    <form action={updateInvoiceWithId}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">

@@ -1,5 +1,6 @@
 import { Revenue } from './definitions';
 
+// formatCurrency(5000) 可能返回 $50.00
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {
     style: 'currency',
