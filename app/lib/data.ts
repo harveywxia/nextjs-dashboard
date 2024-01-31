@@ -9,7 +9,7 @@ import {
   Revenue,
 } from './definitions';
 import { formatCurrency } from './utils';
-// 使用动态渲染 dynamic rending，你如果不指定，默认是静态的
+// 使用动态渲染 dynamic rending，你如果不指定，默认是静态的（不刷新数据库）
 import { unstable_noStore as noStore } from 'next/cache';
 
 export async function fetchRevenue() {
@@ -170,6 +170,7 @@ export async function fetchInvoiceById(id: string) {
       amount: invoice.amount / 100,
     }));
 
+    console.log(invoice);//id不存在的话，invoice为空[]
     return invoice[0];
   } catch (error) {
     console.error('Database Error:', error);

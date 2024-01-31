@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { sql } from '@vercel/postgres';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
 
 // validate form
 const FormSchema = z.object({
@@ -30,11 +31,16 @@ export async function createInvoice(formData: FormData) {
     const date = new Date().toISOString().split('T')[0];
     // Test it out:
     console.log(customerId);
-
-    await sql`
+    try {
+        await sql`
     INSERT INTO invoices (customer_id, amount, status, date)
     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
   `;
+    } catch (error) {
+        return {
+            message: 'Database Error: Failed to Create Invoice.',
+        };
+    }
 
     // next.js默认有缓存，这里可以强制重新请求数据库
     revalidatePath('/dashboard/invoices');
@@ -53,12 +59,15 @@ export async function updateInvoice(id: string, formData: FormData) {
     });
 
     const amountInCents = amount * 100;
-
-    await sql`
+    try {
+        await sql`
       UPDATE invoices
       SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
       WHERE id = ${id}
     `;
+    } catch (error) {
+        return { message: 'Database Error: Failed to Update Invoice.' };
+    }
 
     revalidatePath('/dashboard/invoices');
     redirect('/dashboard/invoices');
@@ -66,6 +75,15 @@ export async function updateInvoice(id: string, formData: FormData) {
 
 
 export async function deleteInvoice(id: string) {
-    await sql`DELETE FROM invoices WHERE id = ${id}`;
-    revalidatePath('/dashboard/invoices');
+    throw new Error('Failed to Delete Invoice')
+    //这个throw以后，后面的代码就不会执行了
+
+    try {
+        await sql`DELETE FROM invoices WHERE id = ${id}`;
+        // 放在try里，保证即使出错也会跳转
+        revalidatePath('/dashboard/invoices');
+        return { message: 'Deleted Invoice.' };
+    } catch (error) {
+        return { message: 'Database Error: Failed to Delete Invoice.' };
+    }
 }
