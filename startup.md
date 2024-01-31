@@ -51,3 +51,24 @@ async function seedUsers(client) {
       );
     `;
 ```
+
+## 可访问性
+
+lint检查，这是一个类似于静态检查的东西
+在package.json中添加
+
+```json
+"scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "seed": "node -r dotenv/config ./scripts/seed.js",
+    "start": "next start",
+    "lint": "next lint"
+},
+```
+
+命令
+
+```bash
+npm run lint
+```
